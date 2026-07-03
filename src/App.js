@@ -28,11 +28,22 @@ export default function Board() {
     // component rather than in each Square
 
     const [squares, setSquares] = useState(Array(9).fill(null));
+    const [xIsNext, setXIsNext] = useState(true);
 
     function handleClick(i) {
+        // Returning early if square already filled
+        if (squares[i]) {
+            return;
+        }
+
         const nextSquares = squares.slice();
-        nextSquares[i] = "X";
+        if (xIsNext) {
+            nextSquares[i] = "X";
+        } else {
+            nextSquares[i] = "O";
+        }
         setSquares(nextSquares);
+        setXIsNext(!xIsNext);
     }
 
 
