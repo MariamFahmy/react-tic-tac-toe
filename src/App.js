@@ -74,15 +74,38 @@ function Board({ xIsNext, squares, onPlay }) {
 export default function Game() {
     const [xIsNext, setXIsNext] = useState(true);
     const [history, setHistory] = useState([Array(9).fill(null)]);
+    const [currentMove, setCurrentMove] = useState(0);
     // Already have enough info to calculate currentSquares, no need for another useState call
-    const currentSquares = history[history.length - 1];
+    const currentSquares = history[currentMove];
 
     function handlePlay(nextSquares) {
-        // Create a new array that contains all the items in history, followed by
-        // nextSquares
-        setHistory([...history, nextSquares]);
+        const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+        setHistory(nextHistory);
+        setCurrentMove(nextHistory.length - 1);
         setXIsNext(!xIsNext);
     }
+
+    function jumpTo(nextMove) {
+        setCurrentMove(nextMove);
+        setXIsNext(nextMove % 2 === 0);
+    }
+
+    // Transform an array into another array using map
+    // Transform history into an array of React elements that can be rendered
+    const moves = history.map((squares, move) => {
+        let description;
+        if (move > 0) {
+            description = 'Go to move #' + move;
+        } else {
+            description = 'Go to game start';
+        }
+        return (
+            // React element
+            <li key={move}>
+                <button onClick={() => jumpTo(move)}>{description}</button>
+            </li>
+        )
+    })
 
     return (
         <div className="game">
@@ -90,7 +113,7 @@ export default function Game() {
                 <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
             </div>
             <div className="game-info">
-                <ol>{/*TODO*/}</ol>
+                <ol>{moves}</ol>
             </div>
         </div>
     )
