@@ -23,13 +23,7 @@ function Square({ value, onSquareClick }) {
 }
 
 // Square is a child of Board
-export default function Board() {
-    // The best approach is to store the game's state in the parent Board
-    // component rather than in each Square
-
-    const [squares, setSquares] = useState(Array(9).fill(null));
-    const [xIsNext, setXIsNext] = useState(true);
-
+function Board({ xIsNext, squares, onPlay }) {
     function handleClick(i) {
         // Returning early if square already filled
         // or if someone won
@@ -43,8 +37,7 @@ export default function Board() {
         } else {
             nextSquares[i] = "O";
         }
-        setSquares(nextSquares);
-        setXIsNext(!xIsNext);
+        onPlay(nextSquares);
     }
 
     const winner = calculateWinner(squares);
@@ -74,6 +67,32 @@ export default function Board() {
                 <Square value={squares[8]} onSquareClick={() => handleClick(8)}/>
             </div>
         </>
+    )
+}
+
+// 'export default' tells index.js to use the Game component as the top-level component
+export default function Game() {
+    const [xIsNext, setXIsNext] = useState(true);
+    const [history, setHistory] = useState([Array(9).fill(null)]);
+    // Already have enough info to calculate currentSquares, no need for another useState call
+    const currentSquares = history[history.length - 1];
+
+    function handlePlay(nextSquares) {
+        // Create a new array that contains all the items in history, followed by
+        // nextSquares
+        setHistory([...history, nextSquares]);
+        setXIsNext(!xIsNext);
+    }
+
+    return (
+        <div className="game">
+            <div className="game-board">
+                <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+            </div>
+            <div className="game-info">
+                <ol>{/*TODO*/}</ol>
+            </div>
+        </div>
     )
 }
 
