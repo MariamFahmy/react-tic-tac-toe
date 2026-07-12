@@ -91,15 +91,21 @@ export default function Game() {
     // Transform history into an array of React elements that can be rendered
     const moves = history.map((squares, move) => {
         let description;
-        if (move > 0) {
+
+        if (move === currentMove) {
+            description = 'You are at move #' + move;
+        } else if (move > 0) {
             description = 'Go to move #' + move;
         } else {
             description = 'Go to game start';
         }
+
         return (
-            // React element
+
             <li key={move}>
-                <button onClick={() => jumpTo(move)}>{description}</button>
+                {move === currentMove ?
+                    <p>{description}</p> :
+                    <button onClick={() => jumpTo(move)}>{description}</button>}
             </li>
         )
     })
